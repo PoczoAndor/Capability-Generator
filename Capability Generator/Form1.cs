@@ -115,6 +115,33 @@ namespace Capability_Generator
             }
 
         }
+
+        private void generate_no_formulas_Click(object sender, EventArgs e)
+        {
+            double maximum = double.Parse(Max_texbox_text.Text);
+            double minimum = double.Parse(Min_textbox.Text);
+
+            int numberOfValues = 30;
+            double[] values = new double[numberOfValues];
+            for (int i = 0; i < 30; i++)
+            {
+                double random = GetRandomNumber(maximum, minimum);
+                values[i] = random;
+            }
+            int printDatagridwiev = 30;
+            int loopsDatagridwiev = 0;
+            while (printDatagridwiev > loopsDatagridwiev)
+            {
+                DataTable dt = new DataTable();
+                dataGridView1.Rows[0].Cells[loopsDatagridwiev].Value = values[loopsDatagridwiev];
+                loopsDatagridwiev++;
+            }
+            Clipboard.Clear();
+            dataGridView1.SelectAll();
+            dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
+            DataObject dataObj = dataGridView1.GetClipboardContent();
+            Clipboard.SetDataObject(dataObj, true);
+        }
     }
 
 }

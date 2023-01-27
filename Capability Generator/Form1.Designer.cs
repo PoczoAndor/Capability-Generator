@@ -69,6 +69,7 @@
             this.Column28 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column29 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column30 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.generate_no_formulas = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -346,11 +347,22 @@
             this.Column30.HeaderText = "Column30";
             this.Column30.Name = "Column30";
             // 
+            // generate_no_formulas
+            // 
+            this.generate_no_formulas.Location = new System.Drawing.Point(22, 13);
+            this.generate_no_formulas.Name = "generate_no_formulas";
+            this.generate_no_formulas.Size = new System.Drawing.Size(136, 23);
+            this.generate_no_formulas.TabIndex = 12;
+            this.generate_no_formulas.Text = "Genereaza Fara Formula";
+            this.generate_no_formulas.UseVisualStyleBackColor = true;
+            this.generate_no_formulas.Click += new System.EventHandler(this.generate_no_formulas_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.generate_no_formulas);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -413,6 +425,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column28;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column29;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column30;
+        private System.Windows.Forms.Button generate_no_formulas;
     }
 }
 
