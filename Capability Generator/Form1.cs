@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -21,11 +22,9 @@ namespace Capability_Generator
         private static Random random = new Random();
         public double GetRandomNumber(double minimum, double maximum)
         {
-         double values= (random.NextDouble() * (maximum - minimum) + minimum);
+            double values = (random.NextDouble() * (maximum - minimum) + minimum);
             return values;
         }
-
-
 
         private void button1_Click(object sender, EventArgs e)
         {
@@ -33,70 +32,91 @@ namespace Capability_Generator
             double minimum = double.Parse(Min_textbox.Text);
             double maximumTOL = double.Parse(plus_tol_textbox.Text);
             double minimumTOL = double.Parse(tol_minus_textbox.Text);
-            int numberOfValues = 30;
-            double[] values = new double[numberOfValues];
-            for (int i = 0; i < 30; i++)
+
+            double resultCPK = 0;
+            double resultCP = 0;
+            int nrOfLoops =0;
+            while ((resultCP < 1.75) && (resultCPK < 1.5)&&(nrOfLoops!=10000))
             {
-              double random = GetRandomNumber(maximum, minimum);
-                values[i] = random;
-            }
-            //calculatin the standard deviation, sequence is the 30 numbers
-             //double standardDeviation(IEnumerable<double> sequence)
-             //{
-             //   double result = 0;
+                int numberOfValues = 30;
+                double[] values = new double[numberOfValues];
+                for (int i = 0; i < 30; i++)
+                {
+                    double random = GetRandomNumber(maximum, minimum);
+                    values[i] = random;
+                }
+                // Sum up values and squares.
+                double USL = maximumTOL;
+                double LSL = minimumTOL;
 
-             //   if (sequence.Any())
-             //   {
-             //       double average = sequence.Average();
-             //       double sum = sequence.Sum(d => Math.Pow(d - average, 2));
-             //       result = Math.Sqrt((sum) / sequence.Count());
-             //   }
-             //   return result;
-             //}
+                double sumOfRandomnumbers = -1;
+                Array.ForEach(values, i => sumOfRandomnumbers += i);
+                double sumsq = Math.Pow(sumOfRandomnumbers, 2);
 
-            //List<double> intList = new List<double> { 1, 2, 3, 4, 5 };
-            //double standard_deviation = standardDeviation(intList);
-            //MessageBox.Show(standard_deviation.ToString());
-            //MessageBox.Show(values[0].ToString());
+                double delta = USL - LSL;
+                sumOfRandomnumbers += delta;
+                sumsq += delta * delta;
 
-            // Sum up values and squares.
-            double USL = maximumTOL;
-            double LSL =minimumTOL;
 
-            double sumOfRandomnumbers = -1;
-            Array.ForEach(values, i => sumOfRandomnumbers += i);
-            double sumsq = Math.Pow(sumOfRandomnumbers, 2);
-            
-            double delta = USL - LSL;
-            sumOfRandomnumbers += delta;
-            sumsq += delta * delta;
-            
+                // Compute standard deviation.
 
-            // Compute standard deviation.
+                double mean = sumOfRandomnumbers / 30;
+                var minusAvarage = new double[values.Length];
+                var square = new double[values.Length];
+                for (int i = 0, j = values.Length; i < j; i++)
+                { minusAvarage[i] = values[i] - mean; }
+                for (int i = 0, j = values.Length; i < j; i++)
+                { square[i] = Math.Pow(minusAvarage[i], 2); }
+                double summOfSquare = square.Sum();
+                double divideByCountOfValues = summOfSquare / 30;
+                double standardDev = Math.Sqrt(divideByCountOfValues);
 
-            double mean = sumOfRandomnumbers / 30;
-            //https://www.winspc.com/what-is-a-standard-deviation-and-how-do-i-compute-it/#:~:text=Computing%20the%20Standard%20Deviation&text=Subtract%20the%20process%20average%20from,4%20by%20the%20sample%20size
-            var array3 = new double[values.Length];
-            for (int i = 0, j = values.Length; i < j; i++)
-            { array3[i] = values[i] - mean; }
-           //     
-            
 
-            double stdev = Math.Sqrt(sumsq / 30 - mean * mean);
+                // Compute Cp and Cpk.
 
-            // Compute Cp and Cpk.
 
-            
                 double usl = USL;
                 double lsl = LSL;
-                double Cp = (usl - lsl) / (6 * stdev);
+                double Cp = (usl - lsl) / (6 * standardDev);
                 double Cpk = Math.Min(
-                    (usl - mean) / (3 * stdev),
-                    (mean - lsl) / (3 * stdev));
-            MessageBox.Show(Cpk.ToString());
-            Clipboard.Clear();
-            Clipboard.SetText(string.Join("\n", values.Select(t => t.ToString())));
+                    (usl - mean) / (3 * standardDev),
+                    (mean - lsl) / (3 * standardDev));
+                resultCPK = Cpk;
+                resultCP = Cp;
+                
+                if ((resultCPK > 1.5)&& (resultCP > 1.75))
+                {
+                    MessageBox.Show("Cpk este:"+resultCPK.ToString()+ "si Cp este:" + resultCP.ToString());
+                    int printDatagridwiev = 30;
+                    int loopsDatagridwiev = 0;
+                    while (printDatagridwiev > loopsDatagridwiev)
+                    {
+                        DataTable dt = new DataTable();
+                        dataGridView1.Rows[0].Cells[loopsDatagridwiev].Value = values[loopsDatagridwiev];
+                        loopsDatagridwiev++;
+                    }
+                    
+                        
+                        
+                    Clipboard.Clear();
+                    dataGridView1.SelectAll();
+                    dataGridView1.ClipboardCopyMode = DataGridViewClipboardCopyMode.EnableWithoutHeaderText;
+                    DataObject dataObj = dataGridView1.GetClipboardContent();
+                    Clipboard.SetDataObject(dataObj, true);
+                }
+
+                //Clipboard.Clear();
+                //Clipboard.SetText(string.Join("' '", values.Select(t => t.ToString())));
+                if (nrOfLoops == 10000 - 2)
+                {
+                    MessageBox.Show("Nu am gasit te rog schimba minimum si maximum");
+                }
+                nrOfLoops++;
+            }
 
         }
     }
+
 }
+
+
