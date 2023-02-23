@@ -38,7 +38,7 @@ namespace Capability_Generator
             double resultCP = 0;
             int nrOfLoops =0;
             //generate numbers until using the formula u calculate cpk and cp with more than 1,5
-            while ((resultCP < 1.75) && (resultCPK < 1.5)&&(nrOfLoops!=10000))
+            while ((resultCP < 1.75) | (resultCPK < 1.5)&(nrOfLoops!=10000))
             {
                 int numberOfValues = 30;
                 double[] values = new double[numberOfValues];
@@ -86,7 +86,7 @@ namespace Capability_Generator
                 resultCPK = Cpk;
                 resultCP = Cp;
                 //if you find results that are good stop the loop and print out the result
-                if ((resultCPK > 1.5)&& (resultCP > 1.75))
+                if ((resultCPK > 1.5)& (resultCP > 1.75))
                 {
                     MessageBox.Show("Cpk este:"+resultCPK.ToString()+ "si Cp este:" + resultCP.ToString());
                     int printDatagridwiev = 30;
@@ -111,9 +111,10 @@ namespace Capability_Generator
                 //Clipboard.Clear();
                 //Clipboard.SetText(string.Join("' '", values.Select(t => t.ToString())));
                 //if you cannot find good numbers warn them that they need to change values
-                if (nrOfLoops == 10000 - 2)
+                if (nrOfLoops == 10000-1)
                 {
-                    MessageBox.Show("Nu am gasit te rog schimba minimum si maximum");
+                    MessageBox.Show("Schimba minimum si maximum");
+                    break;
                 }
                 nrOfLoops++;
             }
